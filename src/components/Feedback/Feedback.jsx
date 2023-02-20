@@ -1,38 +1,30 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Statistics } from 'components/Statistics/Statistics';
+import { FeedbackOptions } from 'components/FeedbackOptions/FeedbackOptions';
+import { Section } from 'components/Section/Section';
 
 
 export class Feedback extends React.Component {
     static defaultProps = {
-        initialGood: 0,
-        initialNeutral: 0,
-        initialBad: 0,
+        initial: 0
     }
     static propTypes = {
-        initialGood: PropTypes.number.isRequired,
-        initialNeutral: PropTypes.number.isRequired,
-        initialBad: PropTypes.number.isRequired,
+        initial: PropTypes.number.isRequired
+    
     }
     state = {
-        good: this.props.initialGood,
-        neutral: this.props.initialNeutral,
-        bad: this.props.initialBad,
+        good: this.props.initial,
+        neutral: this.props.initial,
+        bad: this.props.initial,
       }
-    handleClickGood = () => {
-        this.setState(prevState => ({
-            good: prevState.good + 1,
-            }))
-    }
-    handleClickNeutral = () => {
-        this.setState(prevState => ({
-            neutral: prevState.neutral + 1,
-            }))
-    }
-    handleClickBad = () => {
-        this.setState(prevState => ({
-            bad: prevState.bad + 1,
-            }))
-    }
+    clickButton = e => {
+        const option = e.target.name;
+        this.setState((prevState) => ({
+          [option]: prevState[option] + 1,
+        }));
+      };
+    
     countTotalFeedback = () => {
         const {good, neutral, bad} = this.state;
         return good + neutral + bad;
@@ -43,19 +35,22 @@ export class Feedback extends React.Component {
     render() {
         const totalFeedback = this.countTotalFeedback();
         const totalPercent = this.countPositiveFeedbackPercentage();
+        const options = Object.keys(this.state);
         return (
             
             <div>
-            <h2>Please leave feedback</h2>
-            <button type="button" onClick={this.handleClickGood}>Good</button>
-            <button type="button" onClick={this.handleClickNeutral}>Neutral</button>
-            <button type="button" onClick={this.handleClickBad}>Bad</button>
-            <h2>Statistics</h2>
-            <p>Good:{this.state.good}</p>
-            <p>Neutral:{this.state.neutral}</p>
-            <p>Bad:{this.state.bad}</p>
-            <p>Total:{totalFeedback}</p>
-            {totalPercent > 0 ? <p>Positive feedback:{totalPercent}%</p> : <p>Positive feedback: 0</p>}
+            <Section title="Please leave feedback"/>
+            <FeedbackOptions options={options} onLeaveFeedback={this.clickButton} />
+            <Section/>
+            <Section title="Statistics">
+            <Statistics 
+            good={this.state.good} 
+            neutral={this.state.neutral} 
+            bad={this.state.bad} 
+            total={totalFeedback} 
+            positive={totalPercent} 
+            />
+            </Section>
             </div>
             
         )
@@ -63,3 +58,18 @@ export class Feedback extends React.Component {
 }
 
 
+// handleClickGood = () => {
+//     this.setState(prevState => ({
+//         good: prevState.good + 1,
+//         }))
+// }
+// handleClickNeutral = () => {
+//     this.setState(prevState => ({
+//         neutral: prevState.neutral + 1,
+//         }))
+// }
+// handleClickBad = () => {
+//     this.setState(prevState => ({
+//         bad: prevState.bad + 1,
+//         }))
+// }
